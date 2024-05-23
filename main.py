@@ -1,10 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException,status
 from sqlalchemy.orm import Session
 from database import *
 from schemas import CreateUser
 from crud import *
+from routers import auth
 from passlib.context import CryptContext
-
+from typing_extensions import Annotated
 app = FastAPI()
 
 # Password hashing context
@@ -13,20 +14,23 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-Base.metadata.create_all(bind= engine)
+
 
 def get_db():
-    db = SessionLocal()
+    db = SessionLocalUser()
     try:
         yield db
     finally:
         db.close()
+init_db()
+
+app.include_router(auth.router)
 
 @app.post("/users/create")
 def create_user_api(username: str, password: str):
-    from database import SessionLocal  # Import the session maker
+    from database import SessionLocalUser # Import the session maker
 
-    db = SessionLocal()
+    db = SessionLocalUser()
     try:
         user = create_user(db, username, password)
         return user
@@ -53,3 +57,6 @@ async def delete_user_api(username: str, db: Session = Depends(get_db)):
     if deleted_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": "User deleted successfully"}
+
+
+
