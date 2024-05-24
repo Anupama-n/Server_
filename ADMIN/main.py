@@ -28,7 +28,7 @@ app.include_router(auth.router)
 
 @app.post("/users/create")
 def create_user_api(username: str, password: str):
-    from database import SessionLocalUser # Import the session maker
+    from ADMIN.database import SessionLocalUser
 
     db = SessionLocalUser()
     try:
