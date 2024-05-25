@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
 
 class EmployeeCreate(BaseModel):
     username: str
@@ -14,26 +15,19 @@ class EmployeeResponse(BaseModel):
 class CreateVehicle(BaseModel):
     vehicle_id: int
     vehicle_type: str
+    entry_time: datetime
     predicted_number_plate: str
     actual_number_plate: str
+    exit_time: Optional[datetime] = None
+    parking_fees: Optional[int] = 0
 
     class Config:
         orm_mode = True
 
 class CreateParkingSlots(BaseModel):
     slot_id: int
-    vehicle_id: int
+    vehicle_id: Optional[int] = None 
     slot_type: str
-
-    class Config:
-        orm_mode = True
-
-class CreateParkingFees(BaseModel):
-    parking_fee_id: int
-    vehicle_id: int
-    entry_time: datetime
-    exit_time: datetime
-    parking_fees: int
 
     class Config:
         orm_mode = True
