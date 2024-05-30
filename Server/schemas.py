@@ -24,9 +24,9 @@ class CreateVehicle(BaseModel):
     class Config:
         orm_mode = True
 
+
 class CreateParkingSlots(BaseModel):
     slot_id: int
-    vehicle_id: Optional[int] = None 
     slot_type: str
 
     class Config:

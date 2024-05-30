@@ -3,13 +3,15 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 import models
 import schemas
-from database import *
+from database import get_db_vehicle
+from login import verify_token  # Import the verify_token function for authentication
 from typing import Optional
 from pytz import timezone
 
 router = APIRouter()
 
 def calculate_parking_fees(entry_time: datetime, exit_time: Optional[datetime], vehicle_type: str) -> int:
+    """Calculates parking fees based on entry and exit times and vehicle type."""
     entry_time = entry_time.astimezone(timezone("UTC"))
     if exit_time:
         exit_time = exit_time.astimezone(timezone("UTC"))
@@ -29,7 +31,8 @@ def calculate_parking_fees(entry_time: datetime, exit_time: Optional[datetime], 
         return 0
 
 @router.post("/vehicles/", response_model=schemas.CreateVehicle)
-def create_vehicle(vehicle: schemas.CreateVehicle, db: Session = Depends(get_db_vehicle)):
+def create_vehicle(vehicle: schemas.CreateVehicle, db: Session = Depends(get_db_vehicle), token: dict = Depends(verify_token)):
+    """Creates a new vehicle entry in the database. Only accessible to logged-in users."""
     print("Received vehicle data:", vehicle)
     parking_fees = calculate_parking_fees(vehicle.entry_time, vehicle.exit_time, vehicle.vehicle_type)
     
@@ -56,7 +59,8 @@ def create_vehicle(vehicle: schemas.CreateVehicle, db: Session = Depends(get_db_
     return new_vehicle
 
 @router.put("/vehicles/{vehicle_id}/exit", response_model=schemas.CreateVehicle)
-def update_exit_time(vehicle_id: int, exit_time: datetime, db: Session = Depends(get_db_vehicle)):
+def update_exit_time(vehicle_id: int, exit_time: datetime, db: Session = Depends(get_db_vehicle), token: dict = Depends(verify_token)):
+    """Updates the exit time of a vehicle. Only accessible to logged-in users."""
     vehicle = db.query(models.Vehicle).filter(models.Vehicle.vehicle_id == vehicle_id).first()
     if not vehicle:
         raise HTTPException(status_code=404, detail="Vehicle not found")
@@ -74,7 +78,8 @@ def update_exit_time(vehicle_id: int, exit_time: datetime, db: Session = Depends
     return vehicle
 
 @router.post("/parking_slots/", response_model=schemas.CreateParkingSlots)
-def create_parking_slot(slot: schemas.CreateParkingSlots, db: Session = Depends(get_db_vehicle)):
+def create_parking_slot(slot: schemas.CreateParkingSlots, db: Session = Depends(get_db_vehicle), token: dict = Depends(verify_token)):
+    """Creates a new parking slot entry in the database. Only accessible to logged-in users."""
     new_slot = models.ParkingSlots(
         slot_id=slot.slot_id,
         vehicle_id=None, 
@@ -85,8 +90,10 @@ def create_parking_slot(slot: schemas.CreateParkingSlots, db: Session = Depends(
     db.refresh(new_slot)
     return new_slot
 
+
 @router.put("/parking_slots/{slot_id}/park_vehicle/{vehicle_id}")
-def park_vehicle(slot_id: int, vehicle_id: int, db: Session = Depends(get_db_vehicle)):
+def park_vehicle(slot_id: int, vehicle_id: int, db: Session = Depends(get_db_vehicle), token: dict = Depends(verify_token)):
+    """Parks a vehicle in a specified parking slot. Only accessible to logged-in users."""
     slot = db.query(models.ParkingSlots).filter(models.ParkingSlots.slot_id == slot_id).first()
     if not slot:
         raise HTTPException(status_code=404, detail="Parking slot not found")
