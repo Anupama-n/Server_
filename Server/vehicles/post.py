@@ -4,8 +4,8 @@ from datetime import datetime
 import models
 import schemas
 from database import get_db_vehicle
-from login import verify_token  # Import the verify_token function for authentication
-from typing import Optional
+from login import verify_token  
+from typing import List, Optional
 from pytz import timezone
 
 router = APIRouter()
@@ -58,10 +58,10 @@ def create_vehicle(vehicle: schemas.CreateVehicle, db: Session = Depends(get_db_
 
     return new_vehicle
 
-@router.put("/vehicles/{vehicle_id}/exit", response_model=schemas.CreateVehicle)
-def update_exit_time(vehicle_id: int, exit_time: datetime, db: Session = Depends(get_db_vehicle), token: dict = Depends(verify_token)):
+@router.put("/vehicles/{actual_number_plate}/exit", response_model=schemas.CreateVehicle)
+def update_exit_time(actual_number_plate: str, exit_time: datetime, db: Session = Depends(get_db_vehicle), token: dict = Depends(verify_token)):
     """Updates the exit time of a vehicle. Only accessible to logged-in users."""
-    vehicle = db.query(models.Vehicle).filter(models.Vehicle.vehicle_id == vehicle_id).first()
+    vehicle = db.query(models.Vehicle).filter(models.Vehicle.actual_number_plate == actual_number_plate).first()
     if not vehicle:
         raise HTTPException(status_code=404, detail="Vehicle not found")
 
@@ -70,7 +70,7 @@ def update_exit_time(vehicle_id: int, exit_time: datetime, db: Session = Depends
     db.commit()
     db.refresh(vehicle)
 
-    parking_slot = db.query(models.ParkingSlots).filter_by(vehicle_id=vehicle_id).first()
+    parking_slot = db.query(models.ParkingSlots).filter_by(vehicle_id=vehicle.vehicle_id).first()
     if parking_slot:
         parking_slot.vehicle_id = None
         db.commit()
@@ -102,3 +102,42 @@ def park_vehicle(slot_id: int, vehicle_id: int, db: Session = Depends(get_db_veh
     db.commit()
 
     return {"message": f"Vehicle {vehicle_id} parked in slot {slot_id}"}
+
+
+@router.get("/vehicles/{actual_number_plate}", response_model=schemas.CreateVehicle)
+def get_vehicle_details(actual_number_plate: str, db: Session = Depends(get_db_vehicle)):
+    """Fetches vehicle details based on actual_number_plate."""
+    vehicle = db.query(models.Vehicle).filter(models.Vehicle.actual_number_plate == actual_number_plate).first()
+    
+    if not vehicle:
+        raise HTTPException(status_code=404, detail="Vehicle not found")
+
+    vehicle_details = {
+        "vehicle_id": vehicle.vehicle_id,
+        "vehicle_type": vehicle.vehicle_type,
+        "entry_time": vehicle.entry_time,
+        "predicted_number_plate": vehicle.predicted_number_plate,
+        "actual_number_plate": vehicle.actual_number_plate,
+        "exit_time": vehicle.exit_time,
+        "parking_fees": vehicle.parking_fees,
+    }
+    
+                
+            
+
+    return vehicle_details
+
+@router.get("/parking-slots/{actual_number_plate}", response_model=List[schemas.CreateParkingSlots])
+def get_parking_slots(actual_number_plate: str, db: Session = Depends(get_db_vehicle)):
+    """Fetches parking slots of a vehicle based on actual_number_plate."""
+    vehicle = db.query(models.Vehicle).filter(models.Vehicle.actual_number_plate == actual_number_plate).first()
+
+    if not vehicle:
+        raise HTTPException(status_code=404, detail="Vehicle not found")
+    
+    parking_slots = db.query(models.ParkingSlots).filter(models.ParkingSlots.vehicle_id == vehicle.vehicle_id).all()
+
+    if parking_slots:
+        return parking_slots
+  
+    raise HTTPException(status_code=404, detail="Parking slots not found for the vehicle")

@@ -1,15 +1,15 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
+from dotenv import load_dotenv,find_dotenv
 from fastapi import Depends
 from typing_extensions import Annotated
 import os
 
-# Load environment variables from the .env file
-load_dotenv()
+env_path = find_dotenv('../ADMIN/.env')
+load_dotenv(env_path)
 
-# Read the database URLs from the environment variables
+
 SQLALCHEMY_DATABASE_URL = os.getenv("SQLALCHEMY_DATABASE_URL")
 SQLALCHEMY_DATABASE_VEHICLE = os.getenv("SQLALCHEMY_DATABASE_VEHICLE")
 
@@ -28,9 +28,7 @@ SessionLocalVehicle = sessionmaker(autocommit=False, autoflush=False, bind=engin
 
 Base = declarative_base()
 
-# Initialize the database tables
-def init_db():
-    import models 
+def init_db(): 
     Base.metadata.create_all(bind=engine_employee)
     Base.metadata.create_all(bind=engine_vehicle)
 

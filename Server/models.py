@@ -16,7 +16,8 @@ class Vehicle(Base):
     actual_number_plate = Column(String)
     exit_time = Column(TIMESTAMP, nullable=True)
     parking_fees = Column(Integer, nullable=False)
-    parking_slot = relationship("ParkingSlots", back_populates="vehicle", uselist=False)
+    parking_slot = relationship("ParkingSlots", back_populates="vehicle")
+
 
 class ParkingSlots(Base):
     __tablename__ = "Parking_slots"

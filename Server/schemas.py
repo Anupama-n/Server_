@@ -21,6 +21,7 @@ class CreateVehicle(BaseModel):
     exit_time: Optional[datetime] = None
     parking_fees: Optional[int] = 0
 
+
     class Config:
         orm_mode = True
 
@@ -28,6 +29,7 @@ class CreateVehicle(BaseModel):
 class CreateParkingSlots(BaseModel):
     slot_id: int
     slot_type: str
+    vehicle_id: Optional[int] = None
 
     class Config:
         orm_mode = True

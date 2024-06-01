@@ -1,17 +1,15 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
 from login import login, read_protected
-from database import get_db_vehicle, init_db
-from sqlalchemy.orm import Session
-from vehicles import post
-import models
-import schemas
+from database import init_db
+from vehicles import post, get
 
 app = FastAPI()
 
 app.post("/login")(login)
 app.get("/protected")(read_protected)
-
 app.include_router(post.router)
+
 
 def main():
     init_db()
