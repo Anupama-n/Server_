@@ -91,6 +91,16 @@ def create_parking_slot(slot: schemas.CreateParkingSlots, db: Session = Depends(
     return new_slot
 
 
+@router.get("/parking-slots/available", response_model=List[schemas.CreateParkingSlots])
+def get_available_parking_slots(db: Session = Depends(get_db_vehicle)):
+    """Fetches available parking slots."""
+    available_slots = db.query(models.ParkingSlots).filter(models.ParkingSlots.vehicle_id == None).all()
+
+    if not available_slots:
+        raise HTTPException(status_code=404, detail="No available parking slots")
+
+    return available_slots
+
 @router.put("/parking_slots/{slot_id}/park_vehicle/{vehicle_id}")
 def park_vehicle(slot_id: int, vehicle_id: int, db: Session = Depends(get_db_vehicle), token: dict = Depends(verify_token)):
     """Parks a vehicle in a specified parking slot. Only accessible to logged-in users."""
