@@ -26,6 +26,7 @@ def get_db_admin():
 
 db_dependency = Annotated[Session, Depends(get_db_admin)]
 
+
 Base = declarative_base()
 
 def init_db():

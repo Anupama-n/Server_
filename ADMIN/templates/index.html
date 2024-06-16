@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/modal.js" defer></script>
+</head>
+<body>
+    <div class="login-form">
+        <h1>Login</h1>
+        <div class="container">
+            <form id="loginForm">
+                <input type="text" name="username" placeholder="Username" id="username" required />
+                <input type="password" name="password" placeholder="Password" id="password" required />
+                <button type="button" id="loginButton">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginButton').addEventListener('click', async () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/admin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            if (response.ok) {
+                window.location.href = '/admin.html';
+            } else {
+                alert('Login failed');
+            }
+        });
+    </script>
+</body>
+</html>

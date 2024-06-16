@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="/static/css/admin.css">
+    <script src="/static/js/modal.js" defer></script>
+</head>
+<body>
+    <section id="sidebar">
+        <a href="#" class="brand">
+            <span class="text">Admin Panel</span>
+        </a>
+        <ul class="side-menu top">
+            <li>
+                <a href="#" class="link">
+                    <i class="bx bxs-dashboard"></i>
+                    <span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li id="open">
+                <a href="#" class="link">
+                    <i class="bx bxs-message-square-add"></i>
+                    <span class="text">Create Employee</span>
+                </a>
+            </li>
+            <li id="delete">
+                <a href="#" class="link">
+                    <i class="bx bxs-message-square-x"></i>
+                    <span class="text">Delete Employee</span>
+                </a>
+            </li>
+            <li id="update">
+                <a href="#" class="link">
+                    <i class="bx bxs-edit"></i>
+                    <span class="text">Update Employee</span>
+                </a>
+            </li>
+            <li>
+                <a href="index.html" class="link">
+                    <i class="bx bx-exit"></i>
+                    <span class="text">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+    <section id="content">
+        <nav>
+            <form action="#">
+                <div class="form-input">
+                    <input type="search" placeholder="Search..." />
+                    <button type="submit" class="search-btn">
+                        <i class="bx bx-search"></i>
+                    </button>
+                </div>
+            </form>
+        </nav>
+        <div id="employeeList" class="employee-list"></div>
+    </section>
+    
+    <!-- Create Employee Modal -->
+    <div id="modal_container" class="modal-container">
+        <div class="modal-content create-employee">
+            <h2>Create Employee</h2>
+            <form id="createEmployeeForm">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required />
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" />
+                <button id="create" type="button">Create</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login_modal_container" class="modal-container">
+        <div class="modal-content login">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required />
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required />
+                <button id="login" type="button">Login</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Delete Employee Modal -->
+    <div id="delete_modal_container" class="modal-container">
+        <div class="modal-content delete">
+            <h2>Delete Employee</h2>
+            <div id="deleteEmployeeList"></div>
+        </div>
+    </div>
+
+    <!-- Update Employee Modal -->
+    <div id="update_modal_container" class="modal-container">
+        <div class="modal-content update">
+            <h2>Update Employee</h2>
+            <div id="updateEmployeeList"></div>
+        </div>
+    </div>
+
+<!-- Update Employee Form Modal -->
+<div id="update_form_modal_container" class="modal-container">
+    <div class="modal-content update-form">
+        <h2>Update Employee Details</h2>
+        <form id="updateEmployeeForm">
+            <label for="updateUsername">New Username:</label>
+            <input type="text" id="updateUsername" name="updateUsername" required />
+            <label for="updatePassword">New Password:</label>
+            <input type="password" id="updatePassword" name="updatePassword" required />
+            <button id="updateSubmit" type="button">Update</button>
+        </form>
+    </div>
+</div>
+
+
+</body>
+</html>
