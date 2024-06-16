@@ -10,7 +10,11 @@ class User(BaseModel):
     username: str
     password: str
     class Config:
-        orm_mode = True  
+        orm_mode = True 
+
+class UserUpdateRequest(BaseModel):
+    new_username: str
+    new_password: str 
 
 
 

@@ -179,99 +179,103 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (updateButton && updateModalContainer) {
         updateButton.addEventListener("click", () => {
-        updateUpdateEmployeeList();
-        updateModalContainer.classList.add("show");
-    });   
-        updateModalContainer.querySelector('.modal-content').addEventListener("click", (event) => {
-        event.stopPropagation();
-    });
-
-    updateModalContainer.addEventListener("click", () => {
-        updateModalContainer.classList.remove("show");
-    });
-}
-
-// Update the employee list for updating
-function updateUpdateEmployeeList() {
-    updateEmployeeList.innerHTML = ""; // Clear previous content
-    const employeeCards = document.querySelectorAll(".employee-card");
-
-    employeeCards.forEach((card, index) => {
-        const updateItem = document.createElement("div");
-        updateItem.classList.add("update-item");
-        updateItem.innerHTML = `
-            ${card.innerHTML}
-            <button class="update-button" data-index="${index}">Update</button>
-        `;
-        updateEmployeeList.appendChild(updateItem);
-    });
-
-    // Add event listeners for update buttons
-    const updateButtons = updateEmployeeList.querySelectorAll(".update-button");
-    updateButtons.forEach(button => {
-        button.addEventListener("click", (event) => {
-            const index = event.target.getAttribute("data-index");
-            const employeeCard = document.querySelectorAll(".employee-card")[index];
-            const username = employeeCard.querySelector("h3").innerText;
-            userToUpdate = username; // Store username of user being updated
-            
-            // Show update form modal and pre-fill form
-            document.getElementById("updateUsername").value = username;
-            document.getElementById("updatePassword").value = ''; // Clear password field
-            updateFormModalContainer.classList.add("show");
+            updateEmployeeListContent();
+            updateModalContainer.classList.add("show");
         });
-    });
-}
 
-// Handle update submission
-// Handle update submission
-if (updateSubmitButton && updateEmployeeForm && updateFormModalContainer) {
-    updateSubmitButton.addEventListener("click", async () => {
-        const newUsername = document.getElementById("updateUsername").value.trim();
-        const newPassword = document.getElementById("updatePassword").value.trim();
+        updateModalContainer.addEventListener("click", () => {
+            updateModalContainer.classList.remove("show");
+        });
 
-        if (userToUpdate && newUsername && newPassword) {
-            try {
-                const response = await fetch(`/users/${userToUpdate}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ new_username: newUsername, new_password: newPassword })
-                });
+        updateModalContainer.querySelector('.modal-content').addEventListener("click", (event) => {
+            event.stopPropagation();
+        });
+    }
 
-                const responseData = await response.json();
+    // Update the employee list for updating
+    function updateEmployeeListContent() {
+        updateEmployeeList.innerHTML = "";
+        const employeeCards = document.querySelectorAll(".employee-card");
 
-                if (!response.ok) {
-                    let errorMessage = 'Failed to update user:';
-                    if (responseData.detail) {
-                        errorMessage += ` ${responseData.detail.map(err => err.msg).join(', ')}`;
-                    } else {
-                        errorMessage += ' Unknown error';
+        employeeCards.forEach((card, index) => {
+            const updateItem = document.createElement("div");
+            updateItem.classList.add("update-item");
+            updateItem.innerHTML = `
+                ${card.innerHTML}
+                <button class="update-button" data-index="${index}">Update</button>
+            `;
+            updateEmployeeList.appendChild(updateItem);
+        });
+
+        // Add event listeners for update buttons
+        const updateButtons = updateEmployeeList.querySelectorAll(".update-button");
+        updateButtons.forEach(button => {
+            button.addEventListener("click", (event) => {
+                const index = event.target.getAttribute("data-index");
+                const employeeCard = document.querySelectorAll(".employee-card")[index];
+                const username = employeeCard.querySelector("h3").innerText;
+                userToUpdate = username; // Store username of user being updated
+
+                // Show update form modal and pre-fill form
+                document.getElementById("updateUsername").value = username;
+                document.getElementById("updatePassword").value = ''; // Clear password field
+                updateFormModalContainer.classList.add("show");
+            });
+        });
+    }
+
+    // Handle update submission
+    if (updateSubmitButton && updateFormModalContainer) {
+        updateSubmitButton.addEventListener("click", async () => {
+            const newUsername = document.getElementById("updateUsername").value.trim();
+            const newPassword = document.getElementById("updatePassword").value.trim();
+
+            if (userToUpdate && newUsername && newPassword) {
+                try {
+                    const payload = { new_username: newUsername, new_password: newPassword };
+                    console.log('Sending payload:', payload); // Debugging line
+
+                    const response = await fetch(`/users/${userToUpdate}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const responseData = await response.json();
+
+                    if (!response.ok) {
+                        let errorMessage = 'Failed to update user:';
+                        if (responseData.detail) {
+                            errorMessage += ` ${responseData.detail.map(err => err.msg).join(', ')}`;
+                        } else {
+                            errorMessage += ' Unknown error';
+                        }
+                        throw new Error(errorMessage);
                     }
-                    throw new Error(errorMessage);
+
+                    alert(`User ${responseData.username} updated successfully!`);
+
+                    // Update employee card
+                    const employeeCard = Array.from(document.querySelectorAll(".employee-card"))
+                        .find(card => card.querySelector("h3").innerText === userToUpdate);
+                    if (employeeCard) {
+                        employeeCard.querySelector("h3").innerText = responseData.username;
+                        // Optionally update other details on the card
+                    }
+
+                    updateFormModalContainer.classList.remove("show");
+                    updateModalContainer.classList.remove("show");
+                } catch (error) {
+                    console.error('Error updating user:', error);
+                    alert(error.message || 'Failed to update user. Please try again later.');
                 }
-
-                alert(`User ${responseData.username} updated successfully!`);
-
-                // Update employee card
-                const employeeCard = Array.from(document.querySelectorAll(".employee-card"))
-                    .find(card => card.querySelector("h3").innerText === userToUpdate);
-                if (employeeCard) {
-                    employeeCard.querySelector("h3").innerText = responseData.username;
-                    // Optionally update other details on the card
-                }
-
-                updateFormModalContainer.classList.remove("show");
-            } catch (error) {
-                console.error('Error updating user:', error);
-                alert(error.message || 'Failed to update user. Please try again later.');
+            } else {
+                alert("Please enter both username and password.");
             }
-        } else {
-            alert("Please enter both username and password.");
-        }
-    });
-}
+        });
+    }
 
 
 });

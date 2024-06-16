@@ -79,15 +79,15 @@ def create_user_api(user: CreateUser, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.put("/users/{username}", response_model=User)
-async def update_user_api(username: str, new_username: str, new_password: str, db: Session = Depends(get_db)):
+async def update_user_api(username: str, update_data: UserUpdateRequest, db: Session = Depends(get_db)):
     updated_user = db.query(UserModel).filter(UserModel.username == username).first()
     if updated_user:
-        updated_user.username = new_username
-        updated_user.password = get_password_hash(new_password)
+        updated_user.username = update_data.new_username
+        updated_user.password = get_password_hash(update_data.new_password)
         db.commit()
         return updated_user
     else:
-        raise HTTPException(status_code=404, detail="User not found") 
+        raise HTTPException(status_code=404, detail="User not found")
 
 @app.delete("/users/{username}", response_model=dict)
 async def delete_user_api(username: str, db: Session = Depends(get_db)):
