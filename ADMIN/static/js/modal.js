@@ -46,7 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await fetch('/users/');
             if (!response.ok) {
-                throw new Error('Failed to fetch employees');
+                console.error('Failed to fetch employees'); // Silent error logging
+                return; // Exit function on failure
             }
 
             const users = await response.json();
@@ -63,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         } catch (error) {
             console.error('Error fetching employees:', error);
-            alert('Failed to load employees. Please try again later.');
         }
     }
 
@@ -214,11 +214,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 const index = event.target.getAttribute("data-index");
                 const employeeCard = document.querySelectorAll(".employee-card")[index];
                 const username = employeeCard.querySelector("h3").innerText;
-                userToUpdate = username; // Store username of user being updated
+                userToUpdate = username;
 
                 // Show update form modal and pre-fill form
                 document.getElementById("updateUsername").value = username;
-                document.getElementById("updatePassword").value = ''; // Clear password field
+                document.getElementById("updatePassword").value = '';
                 updateFormModalContainer.classList.add("show");
             });
         });
@@ -262,7 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         .find(card => card.querySelector("h3").innerText === userToUpdate);
                     if (employeeCard) {
                         employeeCard.querySelector("h3").innerText = responseData.username;
-                        // Optionally update other details on the card
+        
                     }
 
                     updateFormModalContainer.classList.remove("show");
@@ -276,8 +276,4 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
-
 });
-
-

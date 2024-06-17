@@ -2,10 +2,12 @@ from fastapi import FastAPI, WebSocket
 from contextlib import asynccontextmanager
 from fastapi.responses import HTMLResponse
 import json
-# from .login import login, read_protected
-# from .database import init_db
-# from .vehicles import post, get
+
+from login import login, read_protected
+from database import init_db
+from vehicles import post, get
 app = FastAPI()
+
 
 html = """
 <!DOCTYPE html>
@@ -68,13 +70,13 @@ async def websocket_endpoint(websocket: WebSocket):
         data = await websocket.receive_text()
         await websocket.send_text(json.dumps(data))
 
-# app.post("/login")(login)
-# app.get("/protected")(read_protected)
-# app.include_router(post.router)
+app.post("/login")(login)
+app.get("/protected")(read_protected)
+app.include_router(post.router)
 
 
 def main():
-    # init_db()
+    init_db()
     print("hi")
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ from database import get_db_vehicle
 from login import verify_token  
 from typing import List, Optional
 from pytz import timezone
+from database import *
 
 router = APIRouter()
 
@@ -151,3 +152,18 @@ def get_parking_slots(actual_number_plate: str, db: Session = Depends(get_db_veh
         return parking_slots
   
     raise HTTPException(status_code=404, detail="Parking slots not found for the vehicle")
+
+
+
+@router.get("/vehicle_id", response_model=int)
+def get_next_vehicle_id(db: Session = Depends(get_db_vehicle)):
+    """Fetches the latest available vehicle_id."""
+    latest_vehicle = db.query(models.Vehicle).order_by(models.Vehicle.vehicle_id.desc()).first()
+    if not latest_vehicle:
+        raise HTTPException(status_code=404, detail="No vehicle found")
+
+    return latest_vehicle.vehicle_id +1 
+
+
+
+

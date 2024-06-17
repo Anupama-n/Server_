@@ -1,9 +1,10 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from dotenv import load_dotenv,find_dotenv
 from fastapi import Depends
 from typing_extensions import Annotated
+from models import *
 import os
 
 env_path = find_dotenv('../ADMIN/.env')
@@ -45,3 +46,5 @@ def get_db_vehicle():
         yield db_vehicle
     finally:
         db_vehicle.close()
+
+

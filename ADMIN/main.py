@@ -60,7 +60,7 @@ def get_all_users(db: Session = Depends(get_db)):
     users = db.query(UserModel).all()
     return users
 
-@app.get("/users/{username}", response_model=User)
+@app.get("/get_users/{username}", response_model=User)
 def read_user_api(username: str, db: Session = Depends(get_db)):
     db_user = db.query(UserModel).filter(UserModel.username == username).first()
     if db_user is None:
@@ -78,7 +78,7 @@ def create_user_api(user: CreateUser, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.put("/users/{username}", response_model=User)
+@app.put("/put_users/{username}", response_model=User)
 async def update_user_api(username: str, update_data: UserUpdateRequest, db: Session = Depends(get_db)):
     updated_user = db.query(UserModel).filter(UserModel.username == username).first()
     if updated_user:
@@ -89,7 +89,7 @@ async def update_user_api(username: str, update_data: UserUpdateRequest, db: Ses
     else:
         raise HTTPException(status_code=404, detail="User not found")
 
-@app.delete("/users/{username}", response_model=dict)
+@app.delete("/delete_users/{username}", response_model=dict)
 async def delete_user_api(username: str, db: Session = Depends(get_db)):
     deleted_user = db.query(UserModel).filter(UserModel.username == username).first()
     if deleted_user:
