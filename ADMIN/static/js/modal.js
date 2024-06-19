@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const username = employeeCard.querySelector("h3").innerText;
 
                 try {
-                    const response = await fetch(`/users/${username}`, {
+                    const response = await fetch(`/delete_users/${username}`, {
                         method: 'DELETE'
                     });
 
@@ -235,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const payload = { new_username: newUsername, new_password: newPassword };
                     console.log('Sending payload:', payload); // Debugging line
 
-                    const response = await fetch(`/users/${userToUpdate}`, {
+                    const response = await fetch(`/put_users/${userToUpdate}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json'

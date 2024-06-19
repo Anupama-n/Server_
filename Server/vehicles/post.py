@@ -167,3 +167,4 @@ def get_next_vehicle_id(db: Session = Depends(get_db_vehicle)):
 
 
 
+
