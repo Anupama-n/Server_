@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const username = employeeCard.querySelector("h3").innerText;
 
                 try {
-                    const response = await fetch(`/delete_users/${username}`, {
+                    const response = await fetch(`/users/${username}`, {
                         method: 'DELETE'
                     });
 
@@ -177,7 +177,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Update modal logic
     if (updateButton && updateModalContainer) {
         updateButton.addEventListener("click", () => {
             updateEmployeeListContent();
@@ -234,8 +233,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (userToUpdate && newUsername && newPassword) {
                 try {
                     const payload = { new_username: newUsername, new_password: newPassword };
+                    console.log('Sending payload:', payload); // Debugging line
 
-                    const response = await fetch(`/put_users/${userToUpdate}`, {
+                    const response = await fetch(`/users/${userToUpdate}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json'
@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (!response.ok) {
                         let errorMessage = 'Failed to update user:';
                         if (responseData.detail) {
-                            errorMessage += ` ${responseData.detail}`;
+                            errorMessage += ` ${responseData.detail.map(err => err.msg).join(', ')}`;
                         } else {
                             errorMessage += ' Unknown error';
                         }
@@ -262,6 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         .find(card => card.querySelector("h3").innerText === userToUpdate);
                     if (employeeCard) {
                         employeeCard.querySelector("h3").innerText = responseData.username;
+        
                     }
 
                     updateFormModalContainer.classList.remove("show");
